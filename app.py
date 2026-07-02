@@ -4,54 +4,54 @@ import numpy as np
 
 st.set_page_config(page_title="Lab Data Analyzer", layout="wide")
 
-st.title("🔬 Автоматический анализатор спектрометрии")
-st.write("Загрузите сырой CSV-файл с прибора для мгновенной очистки данных и поиска пиков.")
+st.title("Automated spectrometry analyzer")
+st.write("Download raw CSV-file from the application for immediate data analysis")
 
-# --- ЭМУЛЯЦИЯ ЗАГРУЗКИ ФАЙЛА ---
-# На фрилансе мы используем st.file_uploader, но для теста сделаем генерацию данных
-uploaded_file = st.file_uploader("Выбрать файл прибора (CSV)", type=["csv"])
+# --- FILE DOWNLOADING EMULATION ---
+# ATTENTION: in the projects we use real data files, but here, for illustration purposes we would generate the data
+uploaded_file = st.file_uploader("Choose the file from the PC (CSV)", type=["csv"])
 
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 else:
-    st.info("💡 Нажмите кнопку ниже, чтобы сгенерировать тестовые данные прибора:")
-    if st.button("Сгенерировать тестовый спектр"):
-        # Создаем искусственный спектр: шум + химический пик
+    st.info("Press the button bellow to generate the measurement data:")
+    if st.button("Generate CSV measurement data"):
+        # Creating the artificial data spectra (peaks + noise)
         x = np.linspace(200, 800, 100)
         y = np.exp(-((x - 520) / 30)**2) + np.random.normal(0, 0.05, 100)
-        df = pd.DataFrame({"Длина волны (нм)": x, "Оптическая плотность": y})
+        df = pd.DataFrame({"Wavelength (nm)": x, "Optical density": y})
         st.session_state['df'] = df
 
-# --- БЛОК ОБРАБОТКИ И ВИЗУАЛИЗАЦИИ ---
+# --- PROCESSING AND VISUALIZATION CODE BLOCK ---
 if 'df' in st.session_state:
     df = st.session_state['df']
     
-    # Разделяем интерфейс на две колонки (выглядит очень профессионально)
+    # Dividing interface view into 2 columns
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.subheader("📊 Интерактивный график спектра")
+        st.subheader("Interactive spectrum plot")
         # Строим встроенный график Streamlit
-        st.line_chart(data=df, x="Длина волны (нм)", y="Оптическая плотность")
+        st.line_chart(data=df, x="Wavelength (nm)", y="Optical density")
         
     with col2:
-        st.subheader("📈 Результаты анализа")
+        st.subheader("Results of the analysis")
         
-        # Находим пик (максимальное значение) — базовая автоматизация
-        max_row = df.loc[df["Оптическая плотность"].idxmax()]
-        peak_x = round(max_row["Длина волны (нм)"], 1)
-        peak_y = round(max_row["Оптическая плотность"], 3)
+        # Find the maximum peak value
+        max_row = df.loc[df["Optical density"].idxmax()]
+        peak_x = round(max_row["Wavelength (nm)"], 1)
+        peak_y = round(max_row["Optical density"], 3)
         
-        # Красивые b2b метрики
-        st.metric(label="Точка пика (💥 Peak)", value=f"{peak_x} нм")
-        st.metric(label="Макс. интенсивность", value=peak_y)
+        # Magnitudes of the measure
+        st.metric(label="Peak point (Peak)", value=f"{peak_x} nm")
+        st.metric(label="Max intensity", value=peak_y)
         
-        # Кнопка скачивания очищенного отчета в Excel/CSV
+        # Download button for the cleaned report in Excel/CSV
         csv = df.to_csv(index=False).encode('utf-8')
         st.download_button(
-            label="📥 Скачать чистый отчет (CSV)",
+            label="📥 Download the clean report (CSV)",
             data=csv,
             file_name="cleaned_report.csv",
             mime="text/csv",
         )
-        st.success("Анализ завершен за 0.4 секунды!")
+        st.success("Analysis is finished in 0.4 seconds!")
