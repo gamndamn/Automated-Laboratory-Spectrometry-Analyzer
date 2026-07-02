@@ -8,4 +8,4 @@ Features:
 
 How to run locally:
 1. pip install streamlit pandas numpy
-2. streamlit run lab_app.py
+2. streamlit run app.py
