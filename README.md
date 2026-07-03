@@ -11,5 +11,5 @@
 - One-click clean CSV/Excel export for managers.
 
 ### How to run locally:
-1. pip install streamlit pandas numpy
-2. streamlit run app.py
+1. `pip install streamlit pandas numpy`
+2. `streamlit run app.py`
